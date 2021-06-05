@@ -116,21 +116,20 @@ getInputs() {
 loadConfiguration() {
     local error=
     local len=
-    while [[ -z $method || $len > 1 ]]; do
-        method="$(dialog --clear --stdout --title "$error" --checklist "How do you want to load configuration" 0 0 5 \
-            1 "Manually enter values" off \
-            2 "Use file" off )"
+    while [[ -z $method ]]; do
+        method=$(whiptail --menu "How do you want to load configuration \n $error" 0 0 5 \
+            "1" "Manually enter values" \
+            "2" "Use file" 3>&1 1>&2 2>&3)
         len=${#method}
-        if [[ ${#method} > 1 ]]; then 
-            error="Select only one option";
-        
-        fi
 
     done
 
     case $method in
         1)
             getInputs
+            #echo "you selected 1"
+            #echo $method
+
             ;;
 
         2)
@@ -145,13 +144,13 @@ loadConfiguration
 #getInputs
 #dialogMenu
 #clear
-echo $mode
-echo $broker
-echo $topic
-echo $format
-echo $protocol
-echo $sslkey
-echo $sslcert
-echo $username
-echo $password
-echo $method
+#echo $mode
+#echo $broker
+#echo $topic
+#echo $format
+#echo $protocol
+#echo $sslkey
+#echo $sslcert
+#echo $username
+#echo $password
+#echo $method
