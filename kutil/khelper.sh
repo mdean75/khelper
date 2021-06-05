@@ -77,29 +77,32 @@ getInputs() {
         topic="$(whiptail --inputbox "Enter topic name" 10 40 3>&1 1>&2 2>&3)"
     done    
 
-    format="$(whiptail --stdout --inputbox "Specify log format (empty for default)" 10 40 3>&1 1>&2 2>&3)"
+    format=$(whiptail --inputbox "Specify log format (empty for default)" 10 40 3>&1 1>&2 2>&3)
 
     while [[ -z $protocol ]]; do
-        protocol="$(whiptail --checklist "Security Protocol" 10 35 5 \
-            "1" "Plaintext" off \
-            "2" "SSL" off \
-            "3" "SASL" on 3>&1 1>&2 2>&3)"
+        protocol="$(whiptail --radiolist "Security Protocol" 10 35 5 \
+            1 "Plaintext" off \
+            2 "SSL" off \
+            3 "SASL" on 3>&1 1>&2 2>&3)"
     done
 
     while [[ -z $sslkey ]]; do
-        sslkey="$(dialog --stdout --title "Select or type path for ssl.key.location" --fselect "" 14 48 )" 
+        sslkey=$(whiptail --inputbox "Enter path for ssl.key.location" 10 40 3>&1 1>&2 2>&3)
+   #     sslkey="$(whiptail -- "Select or type path for ssl.key.location" --fselect "" 14 48 )" 
     done
 
+
     while [[ -z $sslcert ]]; do
-        sslcert="$(dialog --stdout --title "Select or type path for ssl.certificate.location" --fselect "" 14 48 )"
+        sslcert=$(whiptail --inputbox "Enter path for ssl.certificate.location" 10 40 3>&1 1>&2 2>&3)
+       # sslcert="$(dialog --stdout --title "Select or type path for ssl.certificate.location" --fselect "" 14 48 )"
     done
 
     while [[ -z $username ]]; do
-        username="$(dialog --stdout --inputbox "Username" 0 0)"
+        username=$(whiptail --inputbox "Username" 10 30 3>&1 1>&2 2>&3)
     done
 
     while [[ -z $password ]]; do
-        password="$(dialog --stdout --insecure --passwordbox "Password" 0 0)"
+        password=$(whiptail --passwordbox "Password" 10 30 3>&1 1>&2 2>&3)
     done
 
     fi;
@@ -143,12 +146,24 @@ loadConfiguration
 #dialogMenu
 #clear
 echo $mode
-#echo $broker
-#echo $topic
-#echo $format
-#echo $protocol
-#echo $sslkey
-#echo $sslcert
-#echo $username
-#echo $password
-#echo $method
+echo $broker
+echo $topic
+echo $format
+echo $protocol
+echo $sslkey
+echo $sslcert
+echo $username
+echo $password
+echo $method
+
+whiptail --msgbox "Mode: $mode \n\
+Broker: $broker \n\
+Topic: $topic \n\
+Format: $format \n\
+Protocol: $protocol \n\
+Key Location: $sslkey \n\
+Cert Location: $sslcert \n\
+Username: $username \n\
+Password: $password" 0 0  
+echo "press enter to continue"
+read i
