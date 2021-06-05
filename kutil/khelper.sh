@@ -61,17 +61,17 @@ method=
 
 getInputs() {
     while [[ -z $mode ]]; do
-        mode="$(dialog --stdout --clear --checklist "Select Kafkacat Mode" 0 0 5 \
-        1 "Consumer" off \
-        2 "Producer" off \
-        3 "Metadata Listing" off )"
+        mode=$(whiptail --output-fd 2 --radiolist "Select Kafkacat Mode" 10 35 5 \
+        "1" "Consumer" off \
+        "2" "Producer" off \
+        "3" "Metadata Listing" off 3>&1 1>&2 2>&3)
     done
 
     while [[ -z $broker ]]; do
-        broker="$(dialog --stdout --clear --inputbox "Broker" 0 0)"
+        broker="$(whiptail --inputbox "Broker" 10 30 3>&1 1>&2 2>&3 )"
     done
 
-    if [[ !$mode == 3  ]]; then
+    if [[ $mode != 3  ]]; then
 
     while [[ -z $topic ]]; do
         topic="$(dialog --stdout --inputbox "Topic" 0 0)"
@@ -144,7 +144,7 @@ loadConfiguration
 #getInputs
 #dialogMenu
 #clear
-#echo $mode
+echo $mode
 #echo $broker
 #echo $topic
 #echo $format
