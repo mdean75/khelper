@@ -60,32 +60,30 @@ password=
 method=
 
 getInputs() {
-    while [[ -z $mode ]]; do
-        mode=$(whiptail --output-fd 2 --radiolist "Select Kafkacat Mode" 10 35 5 \
-        "1" "Consumer" off \
-        "2" "Producer" off \
-        "3" "Metadata Listing" off 3>&1 1>&2 2>&3)
-    done
-
     while [[ -z $broker ]]; do
-        broker="$(whiptail --inputbox "Broker" 10 30 3>&1 1>&2 2>&3 )"
+        broker="$(whiptail --inputbox "What broker do you want to connect to?" 10 50 3>&1 1>&2 2>&3 )"
     done
 
-    if [[ $mode != 3  ]]; then
+    while [[ -z $mode ]]; do
+        mode=$(whiptail --output-fd 2 --radiolist "What action do you want to perform?" 10 35 5 \
+        "1" "Consume messages" off \
+        "2" "Produce messages" off \
+        "3" "Get a metadata Listing" off 3>&1 1>&2 2>&3)
+    done
+
+   if [[ $mode != 3  ]]; then
 
     while [[ -z $topic ]]; do
-        topic="$(dialog --stdout --inputbox "Topic" 0 0)"
+        topic="$(whiptail --inputbox "Enter topic name" 10 40 3>&1 1>&2 2>&3)"
     done    
 
-    while [[ -z $format ]]; do
-        format="$(dialog --stdout --inputbox "log format" 0 0)"
-    done
+    format="$(whiptail --stdout --inputbox "Specify log format (empty for default)" 10 40 3>&1 1>&2 2>&3)"
 
     while [[ -z $protocol ]]; do
-        protocol="$(dialog --stdout --clear --checklist "Security Protocol" 0 0 5 \
-            1 "Plaintext" off \
-            2 "SSL" off \
-            3 "SASL" on )"
+        protocol="$(whiptail --checklist "Security Protocol" 10 35 5 \
+            "1" "Plaintext" off \
+            "2" "SSL" off \
+            "3" "SASL" on 3>&1 1>&2 2>&3)"
     done
 
     while [[ -z $sslkey ]]; do
