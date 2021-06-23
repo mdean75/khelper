@@ -58,6 +58,7 @@ sslcert=
 username=
 password=
 method=
+config_file=
 
 getInputs() {
     while [[ -z $broker ]]; do
@@ -83,14 +84,14 @@ getInputs() {
         protocol="$(whiptail --radiolist "Security Protocol" 10 35 5 \
             1 "Plaintext" off \
             2 "SSL" off \
-            3 "SASL" on 3>&1 1>&2 2>&3)"
+            3 "SASL_SSL" on 3>&1 1>&2 2>&3)"
     done
 
     while [[ -z $sslkey ]]; do
         sslkey=$(whiptail --inputbox "Enter path for ssl.key.location" 10 40 3>&1 1>&2 2>&3)
    #     sslkey="$(whiptail -- "Select or type path for ssl.key.location" --fselect "" 14 48 )" 
     done
-
+# -b -C -t -o s@jklklj -X security.protocol=SASL_SSL -X sasl_mechanisms=SCRAM_SHA_256 -X ssl.ca.location=jk -X sasl_username=fdfd -X sasl.password=fdfd -f 
 
     while [[ -z $sslcert ]]; do
         sslcert=$(whiptail --inputbox "Enter path for ssl.certificate.location" 10 40 3>&1 1>&2 2>&3)
@@ -117,6 +118,8 @@ getInputs() {
 loadConfiguration() {
     local error=
     local len=
+    method=
+    
     while [[ -z $method ]]; do
         method=$(whiptail --menu "How do you want to load configuration \n $error" 0 0 5 \
             "1" "Manually enter values" \
@@ -127,20 +130,58 @@ loadConfiguration() {
 
     case $method in
         1)
-            getInputs
-            #echo "you selected 1"
-            #echo $method
-
+            echo "you want to manually enter config values"
             ;;
 
         2)
-            echo "you selected 2"
+            echo "you want to load config from a file"
+            config_file=$(whiptail --inputbox "Enter config file location", 10 50 3>&1 1>&2 2>&3)
+            echo $config_file
+
             ;;
         
     esac
 }
 
-loadConfiguration
+mainMenu() {
+    while [[ -z $option ]]; do
+        option=$(whiptail --radiolist --notags "Welcome to KHelper, a Kafkacat helper utility\nSelectOption" 15 50 10 \
+    1 "Load or update configuration" off \
+    2 "Consume messages" off \
+    3 "Produce messages" off \
+    4 "Get metadata listing" off \
+    5 "View configuration" off \
+    q "Quit" off 3>&1 1>&2 2>&3)
+
+done;
+
+#echo $option
+
+
+}
+handleMenuOption() {
+    case $1 in
+        1)
+            loadConfiguration
+            echo $config_file
+
+            ;;
+        5)
+            whiptail --textbox $config_file 20 50
+            ;;
+    esac
+
+}
+
+while [[ $option != 'q' ]]; do
+    option=
+    mainMenu
+    handleMenuOption $option
+
+done
+
+
+#loadConfiguration
 # dialog --msgbox "$(cat kata-deployment.yaml)" 0 0
 #getInputs
 #dialogMenu
