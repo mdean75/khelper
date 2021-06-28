@@ -1,53 +1,5 @@
 #!/bin/bash
  
-printf "\n%s\n" "Kafkacat Helper"
-printf "%s\n\n" "---------------"
-
-
-displayMenu() {
-    printf "%s\n" "1. Load config"  
-    printf "%s\n" "2. View config"
-    printf "%s\n" "3. View single config value"  
-    printf "%s\n" "4. Consume range" 
-
-    printf "\n%s\n\n" "Select option ... q to quit"
-}
-
-displayOption() {
-    echo -e '\e[9A\e[K'
-    printf "%s" "you selected option "
-    printf "%s\n" "$option"
-    echo -e "\033[2K"
-    echo -e "\033[2K"
-    echo -e "\033[2K"
-    echo -e "\033[2K"   
-    echo -e "\033[2K\n" 
-}
-
-#displayMenu
-
-#read option
-
-#displayOption
-#dialog --checklist "Select:" 0 0 5 1 "consumer" off 2 "producer" off 
-dialogMenu() {
-    kh="$(dialog --stdout --clear --checklist "Select Kafkacat Mode" 0 0 5 \
-        1 "Consumer" off \
-        2 "producer" off \
-        --and-widget --inputbox "Broker" 0 0 \
-        --and-widget --inputbox "Topic" 0 0 \
-        --and-widget --inputbox "Output Format" 0 0 \
-        --and-widget --clear --checklist "Security Protocol" 0 0 5 \
-            1 "Plaintext" off \
-            2 "SSL" off \
-            3 "SASL" off \
-        --and-widget --inputbox "ssl.key.location" 0 0 \
-        --and-widget --inputbox "ssl.certificate.location" 0 0 \
-        --and-widget --inputbox "Username" 0 0 \
-        --and-widget --inputbox "Password" 0 0 )"
-  
-}
-
 mode=
 broker=
 topic=
@@ -145,13 +97,13 @@ loadConfiguration() {
 
 mainMenu() {
     while [[ -z $option ]]; do
-        option=$(whiptail --radiolist --notags "Welcome to KHelper, a Kafkacat helper utility\nSelectOption" 15 50 10 \
-    1 "Load or update configuration" off \
-    2 "Consume messages" off \
-    3 "Produce messages" off \
-    4 "Get metadata listing" off \
-    5 "View configuration" off \
-    q "Quit" off 3>&1 1>&2 2>&3)
+        option=$(whiptail --menu --nocancel --notags "Welcome to KHelper, a Kafkacat helper utility\n" 0 0 5 \
+    "1" "Load or update configuration" \
+    "2" "Consume messages" \
+    "3" "Produce messages" \
+    "4" "Get metadata listing" \
+    "5" "View configuration" \
+    "q" "Quit" 3>&1 1>&2 2>&3)
 
 done;
 
@@ -159,15 +111,31 @@ done;
 
 
 }
+
+displayConfig() {
+    whiptail --msgbox "Mode: $mode \n\
+    Broker: $broker \n\
+    Topic: $topic \n\
+    Format: $format \n\
+    Protocol: $protocol \n\
+    Key Location: $sslkey \n\
+    Cert Location: $sslcert \n\
+    Username: $username \n\
+    Password: $password" 0 0  
+}
+
+
+
 handleMenuOption() {
     case $1 in
         1)
             loadConfiguration
-            echo $config_file
+            #echo $config_file
 
             ;;
         5)
-            whiptail --textbox $config_file 20 50
+            #whiptail --textbox $config_file 20 50
+            displayConfig 
             ;;
     esac
 
@@ -180,31 +148,5 @@ while [[ $option != 'q' ]]; do
 
 done
 
-
-#loadConfiguration
-# dialog --msgbox "$(cat kata-deployment.yaml)" 0 0
-#getInputs
-#dialogMenu
-#clear
-echo $mode
-echo $broker
-echo $topic
-echo $format
-echo $protocol
-echo $sslkey
-echo $sslcert
-echo $username
-echo $password
-echo $method
-
-whiptail --msgbox "Mode: $mode \n\
-Broker: $broker \n\
-Topic: $topic \n\
-Format: $format \n\
-Protocol: $protocol \n\
-Key Location: $sslkey \n\
-Cert Location: $sslcert \n\
-Username: $username \n\
-Password: $password" 0 0  
 echo "press enter to continue"
 read i
